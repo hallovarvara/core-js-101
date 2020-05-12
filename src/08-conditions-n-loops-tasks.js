@@ -471,8 +471,44 @@ function getMatrixProduct(m1, m2) {
  *    [    ,   ,    ]]
  *
  */
-function evaluateTicTacToePosition(/* position */) {
-  throw new Error('Not implemented');
+function evaluateTicTacToePosition(position) {
+  /* Take rows from position */
+  const rows = position;
+
+  /* Take columns from position */
+  const columns = position.reduce((cols, r, rowI) => {
+    const updated = cols;
+    r.forEach((symb, symbI) => {
+      updated[symbI][rowI] = symb;
+      return updated;
+    });
+    return updated;
+  }, position.map(() => Array(position.length)));
+
+  /* Take diagonals from position */
+  const diagonals = Array(2).fill(0).map(() => Array(position.length).fill(0));
+  diagonals[0] = diagonals[0].map((symb, i) => position[i][i]);
+  diagonals[1] = diagonals[1].map((symb, i) => position[i][position.length - i - 1]);
+
+  /* Checking who is a winner */
+  const chooseWinner = () => {
+    const lines = [...rows, ...columns, ...diagonals];
+
+    let result = ['X', '0'].reduce((results, symb) => {
+      const updated = results;
+      const occures = lines.map((arr) => arr.filter((s) => s === symb));
+      updated[symb] = occures.some((set) => set.length === 3);
+      return updated;
+    }, {});
+
+    Object.values(result).forEach((isWinner, i) => {
+      if (isWinner) result = Object.keys(result)[i];
+    });
+
+    return (typeof result === 'string') ? result : undefined;
+  };
+
+  return chooseWinner();
 }
 
 
